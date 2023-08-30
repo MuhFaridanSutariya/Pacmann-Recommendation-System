@@ -1,9 +1,9 @@
 import pandas as pd
 
 def load_data():
-    df1 = pd.read_csv('../../data/tourism_rating.csv')
-    df2 = pd.read_csv('../../data/tourism_with_id.csv')
-    df3 = pd.read_csv('../../data/user.csv')
+    df1 = pd.read_csv('data/tourism_rating.csv')
+    df2 = pd.read_csv('data/tourism_with_id.csv')
+    df3 = pd.read_csv('data/user.csv')
 
     raw = pd.merge(df1, df3, on='User_Id')
     df = pd.merge(df2, raw, on='Place_Id')

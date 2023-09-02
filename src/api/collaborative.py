@@ -1,7 +1,6 @@
-from fastapi import FastAPI
-from fastapi import Request
-from architectures import RecommenderNet
-from preprocessing import load_data, get_place_encodings
+from fastapi import FastAPI, Request
+from src.api.architectures import RecommenderNet
+from src.api.preprocessing import load_data, get_place_encodings
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -10,8 +9,6 @@ import os
 import joblib
 import numpy as np
 import pandas as pd
-import pickle
-
 
 app = FastAPI()
 
@@ -27,7 +24,7 @@ def load_model():
         model = RecommenderNet(User_Id, Place_Id, Age, Location_Encoded, embedding_size)
         dummy_input = tf.constant([[0, 0, 0, 0]], dtype=tf.int32)
         _ = model(dummy_input)
-        model.load_weights('../../models/recommender_model_weights.h5')
+        model.load_weights('models/recommender_model_weights.h5')
         return model  # Return the loaded model, not a response dictionary
     except Exception as e:
         response = {
@@ -38,7 +35,7 @@ def load_model():
 
 def load_encoder():
     try:
-        ohe_location = joblib.load('../../models/encoder.pkl')
+        ohe_location = joblib.load('models/encoder.pkl')
         return ohe_location
     except Exception as e:
         response = {
@@ -93,8 +90,13 @@ def get_top_recommendations(model, user_id, age_encoded, location_encoded, place
     return user_recommendations
 
 
-@app.post("/recommendation")
-async def recommendation(user: int, Age: int, Location_Encoded: str):
+@app.post("/collaborative")
+async def recommendation(data: Request):
+    data = await data.json()
+    user = data['user_id']
+
+    user = int(user)
+
     model = load_model()
     encoder = load_encoder()
     df = load_data()
@@ -102,16 +104,27 @@ async def recommendation(user: int, Age: int, Location_Encoded: str):
 
     place_df = df.copy()
 
-    Location = encoder.transform([Location_Encoded])
+    user_data = df[df['User_Id'] == user]
+    if not user_data.empty:
+        age = int(user_data.iloc[0]['Age'])
+        Location = user_data.iloc[0]['Location']
 
-    Location = Location[0]
+        location_encoded = encoder.transform([Location])
+
+        location_encoded = location_encoded[0]
+    else:
+        response = {
+            "status": 204,
+            "message": "User not found"
+        }
+        return response
 
     try:
-        recommendations = get_top_recommendations(model, user, Age, Location, place_to_place_encoded, place_encoded_to_place, user_to_user_encoded, place_df)
+        recommendations = get_top_recommendations(model, user, age, location_encoded, place_to_place_encoded, place_encoded_to_place, user_to_user_encoded, place_df)
         
         response = {
             "status": 200,
-            "input": [user, Age, Location_Encoded],
+            "input": [user, age, Location],
             "recommendations": recommendations
         }
     except Exception as e:

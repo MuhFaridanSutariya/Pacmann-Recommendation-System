@@ -70,7 +70,9 @@ Please run this command at the same time
 How to run FAST API:
 
 ``uvicorn src.api.topk:app --port 8081 --reload``
+
 ``uvicorn src.api.collaborative:app --port 8080 --reload``
+
 ``uvicorn src.api.contentbased:app --port 8000 --reload ``
 
 How to run Streamlit:

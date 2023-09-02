@@ -1,5 +1,4 @@
-from fastapi import FastAPI
-from fastapi import Request
+from fastapi import FastAPI, Request
 from src.api.architectures import RecommenderNet
 from src.api.preprocessing import load_data, get_place_encodings
 import tensorflow as tf
@@ -10,8 +9,6 @@ import os
 import joblib
 import numpy as np
 import pandas as pd
-import pickle
-
 
 app = FastAPI()
 
@@ -93,10 +90,10 @@ def get_top_recommendations(model, user_id, age_encoded, location_encoded, place
     return user_recommendations
 
 
-@app.post("/recommendation")
+@app.post("/collaborative")
 async def recommendation(data: Request):
     data = await data.json()
-    user = data['user']
+    user = data['user_id']
 
     user = int(user)
 

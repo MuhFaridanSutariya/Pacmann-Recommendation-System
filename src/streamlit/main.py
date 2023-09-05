@@ -6,10 +6,17 @@ import requests
 import pandas as pd
 
 from PIL import Image
-from src.api.preprocessing import load_data
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.insert(0, project_root)
+def load_data():
+    df1 = pd.read_csv('data/tourism_rating.csv')
+    df2 = pd.read_csv('data/tourism_with_id.csv')
+    df3 = pd.read_csv('data/user.csv')
+
+    raw = pd.merge(df1, df3, on='User_Id')
+
+    df = pd.merge(df2, raw, on='Place_Id').drop(columns=['Unnamed: 11', 'Unnamed: 12', 'Lat', 'Coordinate', 'Long', 'Time_Minutes'])
+
+    return df
 
 st.set_page_config(
     page_title="Tourist Recommendation System",

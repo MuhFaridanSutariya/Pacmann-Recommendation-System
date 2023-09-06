@@ -148,10 +148,19 @@ elif selected_metric == 'Collaborative Filtering':
                         top_places_user = res['recommendations']['top_places_user']
                         recommended_places = res['recommendations']['recommended_places']
 
-                        st.success("Recommendations:")
+                        user_age = res['input'][1]
+                        user_location = res['input'][2]
+
+                        st.header("Profile UserID {}:".format(user_id))
+
+                        st.write("Age of user {} years".format(user_age))
+                        st.write("From {}".format(user_location))
+
                         st.subheader("Top Places by UserID {}:".format(user_id))
                         for place in top_places_user:
                             st.write(place)
+
+                        st.success("Recommendations:")
 
                         st.subheader("Recommended Places for UserID {}:".format(user_id))
                         for place in recommended_places:

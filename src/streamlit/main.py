@@ -28,7 +28,6 @@ img = Image.open("src/streamlit/assets/bg.jpg")
 st.image(img)
 st.title("Tourist Recommendation System")
 
-# Define constants
 GIVE_RECOMMENDATION_LABEL = "Give Recommendation"
 SENDING_MESSAGES = "Sending data to the prediction server... please wait..."
 INVALID_RESPONSE_MESSAGE = "Invalid response from the server. Please try again later."
@@ -54,23 +53,26 @@ if selected_metric == 'Top Rating Recommendations':
 
             with st.spinner(SENDING_MESSAGES):
                 try:
-                    # Make a request to your FastAPI endpoint
                     res = requests.post("http://127.0.0.1:8081/topk", json=form_data).json()
                     
-                    if res['status'] == 200:
-                        st.success("Top K recommendations retrieved successfully.")
-                        
-                        # Display the recommendations
+                    if res['status'] == 200:                        
                         recommendations = res["data"]
-                        st.write("Top K Recommendations:")
+                        st.success("Top Place Recommendations:")
                         for rec in recommendations:
-                            st.write(f"Place Name: {rec['Place_Name']}")
-                            st.write(f"Description: {rec['Description']}")
-                            st.write(f"Category: {rec['Category']}")
-                            st.write(f"City: {rec['City']}")
-                            st.write(f"Price: {rec['Price']}")
-                            st.write(f"Place Ratings: {rec['Place_Ratings']}")
+                            st.markdown(f"**Place Name:** {rec['Place_Name']}")
+
+                            st.markdown(f"**Description:** {rec['Description']}")
+
+                            st.markdown(f"**Category:** {rec['Category']}")
+
+                            st.markdown(f"**City:** {rec['City']}")
+
+                            st.markdown(f"**Price:** {rec['Price']}")
+
+                            st.markdown(f"**Place Ratings:** {rec['Place_Ratings']}")
+
                             st.write("-" * 50)
+
                     else:
                         st.error(f"Error in prediction. Message: {res['message']}")
                 except json.decoder.JSONDecodeError:
@@ -105,17 +107,35 @@ elif selected_metric == 'Content Based Filtering':
             with st.spinner(SENDING_MESSAGES):
                 try:
                     res = requests.post("http://127.0.0.1:8000/contentbased", json=form_data).json()
-
+                    print(res)
                     if res['status'] == 200:
-                        st.success(f"User Input: {place_name}")
+                        st.subheader("Profil Place")
+                        user_input = res['user_input']
+                        desc = res['user_input'][1]
+                        cat = res['user_input'][2]
+                        city = res['user_input'][3]
+                        
+                        st.markdown(f"**Place Name:** {place_name}")
+
+                        st.markdown(f"**Place Description:** {desc['0']}")
+
+                        st.markdown(f"**Place Category:** {cat['0']}")
+
+                        st.markdown(f"**Place City:** {city['0']}")
+
                         recommendations = res['recommendations']
-                        st.write("Recommended Places:")
+                        st.success(f"Recommended Places:")
                         for rec in recommendations:
-                            st.write(f"Place Name: {rec['Place_Name']}")
-                            st.write(f"Description: {rec['Description']}")
-                            st.write(f"Category: {rec['Category']}")
-                            st.write(f"City: {rec['City']}")
-                            st.write(f"Price: {rec['Price']}")
+                            st.markdown(f"**Place Name:** {rec['Place_Name']}")
+
+                            st.markdown(f"**Description:** {rec['Description']}")
+
+                            st.markdown(f"**Category:** {rec['Category']}")
+
+                            st.markdown(f"**City:** {rec['City']}")
+
+                            st.markdown(f"**Price:** {rec['Price']}")
+
                             st.write("-" * 50)
                     else:
                         st.error(f"Error in prediction. Please check your code: {res['message']}")
@@ -151,18 +171,18 @@ elif selected_metric == 'Collaborative Filtering':
                         user_age = res['input'][1]
                         user_location = res['input'][2]
 
-                        st.header("Profile UserID {}:".format(user_id))
+                        st.header(f"Profile UserID {user_id}:")
 
-                        st.write("Age of user {} years".format(user_age))
-                        st.write("From {}".format(user_location))
+                        st.write(f"Age of user {user_age} years")
+                        st.write(f"From {user_location}")
 
-                        st.subheader("Top Places by UserID {}:".format(user_id))
+                        st.subheader(f"Top Places by UserID {user_id}:")
                         for place in top_places_user:
                             st.write(place)
 
                         st.success("Recommendations:")
 
-                        st.subheader("Recommended Places for UserID {}:".format(user_id))
+                        st.subheader(f"Recommended Places for UserID {user_id}:")
                         for place in recommended_places:
                             st.write(place)
                         

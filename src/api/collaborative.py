@@ -129,7 +129,7 @@ async def recommendation(data: Request):
         }
     except Exception as e:
         response = {
-            "status": 204,
+            "status": 500,
             "message": str(e)
         }
     return response

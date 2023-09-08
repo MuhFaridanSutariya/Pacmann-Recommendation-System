@@ -53,6 +53,12 @@ async def place_recommendations(data: dict = None):
         place_name = data.get('place_name')
         total = data.get('total', 10)
 
+        desc = df[df['Place_Name'] == place_name]['Description']
+        category = df[df['Place_Name'] == place_name]['Category']
+        city = df[df['Place_Name'] == place_name]['City']
+        price = df[df['Place_Name'] == place_name]['Price']
+        place_ratings = df[df['Place_Name'] == place_name]['Place_Ratings']
+
         k = int(total)
 
         user_place_sim = cosine_sim_df[place_name]
@@ -60,7 +66,7 @@ async def place_recommendations(data: dict = None):
         recommendations = df.iloc[closest_indices][['Place_Name', 'Description', 'Category', 'City', 'Price']].to_dict(orient='records')
         response = {
             "status": 200,
-            "user_input": place_name,
+            "user_input": [place_name, desc, category, city],
             "recommendations": recommendations
         }
     except Exception as e:

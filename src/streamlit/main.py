@@ -115,13 +115,14 @@ elif selected_metric == 'Content Based Filtering':
                         cat = res['user_input'][2]
                         city = res['user_input'][3]
                         
-                        st.markdown(f"**Place Name:** {place_name}")
-
-                        st.markdown(f"**Place Description:** {desc['0']}")
-
-                        st.markdown(f"**Place Category:** {cat['0']}")
-
-                        st.markdown(f"**Place City:** {city['0']}")
+                        for key, value in user_input[1].items():
+                            st.markdown(f"**Place Description:** {value}")
+                        
+                        for key, value in user_input[2].items():
+                            st.markdown(f"**Place Category:** {value}")
+                        
+                        for key, value in user_input[3].items():
+                            st.markdown(f"**Place City:** {value}")
 
                         recommendations = res['recommendations']
                         st.success(f"Recommended Places:")
